@@ -164,8 +164,6 @@
                 {% with video.get_team_video as team_video %}
                     {% if team_video %}
                         {% render_belongs_to_team_list video user %}
-
-                        {% team_move_video_select %}
                     {% else %}
                         {% if user.managed_teams %}
                             <div class="video-tools grid_4 omega">

@@ -182,7 +182,7 @@ def team_add_video_select(context):
 def team_move_video_select(context):
     user = context['user']
     if user.is_authenticated():
-        team_video = context['video'].get_team_video()
+        team_video = context['team_video']
         if team_video:
             qs = Team.objects.filter(users=user)
             context['teams'] = [team for team in qs

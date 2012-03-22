@@ -15,6 +15,8 @@
     <script type="text/javascript">
         window.REPLY_MSG_DATA = {% if reply_msg %}{{ reply_msg.json_data|safe }}{% else %}null{% endif %};
         window.STATIC_URL = '{{ STATIC_URL }}';
+        // TODO
+        // Every single translation that goes to a JS variable needs to be |escapejs'd.
         window.DELETE_MESSAGE_CONFIRM = '{% trans 'Do you really wish to delete this message?' %}';
         window.MESSAGE_SUCCESSFULLY_SENT = '{% trans "The message has been successfully sent." %}';
     </script>

@@ -1112,7 +1112,7 @@ models.signals.m2m_changed.connect(User.sl_followers_change_handler, sender=Subt
 
 
 # SubtitleCollection
-# (parent class of SubtitleVersion 
+# (parent class of SubtitleVersion
 class SubtitleCollection(models.Model):
     is_forked=models.BooleanField(default=False)
     # should not be changed directly, but using teams.moderation. as those will take care
@@ -1457,6 +1457,41 @@ class SubtitleVersion(SubtitleCollection):
         return self.moderation_status in [APPROVED, UNMODERATED]
 
 
+    # Metadata
+    def _get_metadata(self, key):
+        """Return the metadata for this version for the given key, or None."""
+        try:
+            m = self.metadata.get(key=SubtitleVersionMetadata.KEY_IDS[key])
+            return m.get_data()
+        except SubtitleVersionMetadata.DoesNotExist:
+            return None
+
+    def get_reviewed_by(self):
+        """Return the User that reviewed this version, or None.  Hits the DB."""
+        return self._get_metadata('reviewed_by')
+
+    def get_approved_by(self):
+        """Return the User that approved this version, or None.  Hits the DB."""
+        return self._get_metadata('approved_by')
+
+
+    def _set_metadata(self, key, value):
+        v, created = SubtitleVersionMetadata.objects.get_or_create(
+                        subtitle_version=self,
+                        key=SubtitleVersionMetadata.KEY_IDS[key])
+        v.data = value
+        v.save()
+
+    def set_reviewed_by(self, user):
+        """Set the User that reviewed this version."""
+        self._set_metadata('reviewed_by', user.pk)
+
+    def set_approved_by(self, user):
+        """Set the User that approved this version."""
+        self._set_metadata('approved_by', user.pk)
+
+
+
 def update_followers(sender, instance, created, **kwargs):
     user = instance.user
     lang = instance.language
@@ -1533,6 +1568,42 @@ def has_viewable_draft(version, user):
                              .values_list('assignee__id', flat=True))
     return user.pk in users
 
+
+class SubtitleVersionMetadata(models.Model):
+    """This model is used to add extra metadata to SubtitleVersions.
+
+    We could just continually add fields to SubtitleVersion, but that requires
+    a new migration each time and bloats the model more and more.  Also, there
+    are some pieces of data that are not usually needed, so it makes sense to
+    keep them off of the main model.
+
+    """
+    KEY_CHOICES = (
+        (100, 'reviewed_by'),
+        (101, 'approved_by'),
+    )
+    KEY_NAMES = dict(KEY_CHOICES)
+    KEY_IDS = dict([choice[::-1] for choice in KEY_CHOICES])
+
+    key = models.PositiveIntegerField(choices=KEY_CHOICES)
+    data = models.TextField(blank=True)
+    subtitle_version = models.ForeignKey(SubtitleVersion, related_name='metadata')
+
+    created = models.DateTimeField(auto_now_add=True, editable=False)
+    modified = models.DateTimeField(auto_now=True, editable=False)
+
+    class Meta:
+        unique_together = (('key', 'subtitle_version'),)
+        verbose_name_plural = 'subtitle version metadata'
+
+    def __unicode__(self):
+        return u'%s - %s' % (self.subtitle_version, self.get_key_display())
+
+    def get_data(self):
+        if self.get_key_display() in ['reviewed_by', 'approved_by']:
+            return User.objects.get(pk=int(self.data))
+        else:
+            return self.data
 
 
 # Subtitle

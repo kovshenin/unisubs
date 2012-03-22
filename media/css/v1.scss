@@ -931,10 +931,12 @@ p.view-more {
 .v1 form {
     padding: 1em 0;
 
+    h3 {
+        line-height: 20px;
+    }
     .form-title {
         margin: 1em 0 0 0;
     }
-
     fieldset {
         padding-bottom: 3em;
 
@@ -983,7 +985,6 @@ p.view-more {
             height: 5em;
         }
     }
-
     p {
         color: inherit;
     }
@@ -1172,12 +1173,6 @@ label[for="id_thumbnail"] {
 }
 input[name="thumbnail-clear"] {
     margin: 12px 4px 12px 0 !important;
-}
-body#teams div.edit-team-video form fieldset a {
-    display: inline-block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 240px;
 }
 
 /* Dashboard */
@@ -2040,4 +2035,24 @@ pre.dump {
 }
 #teams .view .filters.active {
     display: block;
+}
+#teams form.edit-video {
+    fieldset {
+        padding-bottom: 0;
+    }
+}
+#teams form.move-video {
+    border-top: 10px solid #ECF0F1;
+    margin-top: 15px;
+
+    fieldset {
+        padding-bottom: 0;
+
+        select {
+            width: auto;
+        }
+    }
+    div.submit {
+        margin-top: 10px;
+    }
 }

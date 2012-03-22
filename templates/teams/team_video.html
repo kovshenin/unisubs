@@ -6,6 +6,8 @@
     {% trans 'Edit team video' %} | Universal Subtitles
 {% endblock %}
 
+{% block html_attrs %}id="team_video_edit"{% endblock %}
+
 {% block css %}
     {{ block.super }}
 {% endblock %}
@@ -15,13 +17,12 @@
 {% endblock %}
 
 {% block view_content %}
-
     <div class="view grid_8 omega edit-team-video">
         {% with 'videos' as current %}
             {% include 'teams/_tabs.html' %}
         {% endwith %}
 
-        <form method='post' action="." enctype="multipart/form-data" class="settings">
+        <form method='post' action="." enctype="multipart/form-data" class="settings edit-video">
 
             <h3>{% trans 'Edit video' %}: <em>{% firstof team_video.title team_video.video.title %}</em></h3>
             <fieldset>
@@ -44,9 +45,6 @@
             </div>
             {% csrf_token %}
         </form>
+        {% team_move_video_select %}
     </div>
-    <script type="text/javascript">
-      {% include "teams/team_video.js" %}
-    </script>
-
 {% endblock %}

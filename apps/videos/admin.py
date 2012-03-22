@@ -19,7 +19,7 @@
 from django.contrib import admin
 from videos.models import (
     Video, SubtitleLanguage, SubtitleVersion, VideoFeed, VideoMetadata,
-    VideoUrl
+    VideoUrl, SubtitleVersionMetadata
 )
 from videos.tasks import video_changed_tasks
 
@@ -126,6 +126,16 @@ class SubtitleVersionAdmin(admin.ModelAdmin):
             return '%s %%' % int(obj.text_change * 100)
         return "0 %"
 
+class SubtitleVersionMetadataAdmin(admin.ModelAdmin):
+    list_display = ['video', 'subtitle_version', 'key']
+    list_filter = ['key', 'created', 'modified']
+    raw_id_fields = ['subtitle_version']
+    search_fields = ['subtitle_version__language__video__video__video_id',
+                     'subtitle_version__language__video__video__title']
+
+    def video(self, obj):
+        return obj.subtitle_version.language.video.title
+
 class SubtitleAdmin(admin.ModelAdmin):
     list_display = ['version', 'subtitle_id', 'subtitle_order', 'subtitle_text', 'start_time', 'end_time']
 
@@ -135,6 +145,7 @@ class VideoFeedAdmin(admin.ModelAdmin):
 
 #admin.site.register(Subtitle, SubtitleAdmin)
 admin.site.register(SubtitleVersion, SubtitleVersionAdmin)
+admin.site.register(SubtitleVersionMetadata, SubtitleVersionMetadataAdmin)
 admin.site.register(Video, VideoAdmin)
 admin.site.register(VideoMetadata, VideoMetadataAdmin)
 admin.site.register(SubtitleLanguage, SubtitleLanguageAdmin)

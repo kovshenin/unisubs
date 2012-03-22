@@ -1,28 +1,21 @@
 {% load i18n %}
 
 {% if user.is_authenticated and teams %}
-    <p>{% trans "Move this video to another one of your teams" %}:</p>
-    <div class="sort_button">
-        <div class='arrow'></div>
-        <span class="sort_label">
-            <strong>{% trans 'Choose a team' %}</strong>
-        </span>
-        <ul>
-            {% for team in teams %}
-                <li>
-                    {# TODO: Make this look nice, Nick. #}
-                    <form action="{% url teams:move_video %}" method="POST">
-                        {% csrf_token %}
-
-                        <input type="hidden" name="team_video" value="{{ team_video.pk }}" />
-                        <input type="hidden" name="team" value="{{ team.pk }}" />
-                        <input type="hidden" name="next" value="{{ request.path }}" />
-
-                        <a href="#" onclick="">{{ team }}</a>
-                        <input type="submit" class="submit" value="go" name="" />
-                    </form>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
+    <form class="move-video settings" action="{% url teams:move_video %}" method="POST">
+        <h3>{% trans "Move video to one of your other teams?" %}</h3>
+        <fieldset>
+            <select name="team" id="id_team">
+                {% for team in teams %}
+                    <option value="{{ team_video.pk }}" data-team-pk="{{ team.pk }}">{{ team }}</option>
+                {% endfor %}
+            </select>
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}" />
+            <input type="hidden" name="team_video" value="" />
+            <input type="hidden" name="team" value="" />
+        </fieldset>
+        <div class="submit">
+            <button type="submit">Move video</button>
+        </div>
+    </form>
 {% endif %}
