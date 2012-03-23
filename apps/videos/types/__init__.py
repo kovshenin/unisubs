@@ -24,7 +24,7 @@ from vimeo import VimeoVideoType
 from flv import FLVVideoType
 from brigthcove import BrightcoveVideoType
 from mp3 import Mp3VideoType
-from wordpresstv import WordpresstvVideoType
+from wordpresstv import WordPressTVVideoType
 
 video_type_registrar = VideoTypeRegistrar()
 video_type_registrar.register(YoutubeVideoType)
@@ -36,7 +36,7 @@ video_type_registrar.register(FLVVideoType)
 video_type_registrar.register(BrightcoveVideoType)
 video_type_registrar.register(Mp3VideoType)
 video_type_registrar.register(Mp3VideoType)
-video_type_registrar.register(WordpresstvVideoType)
+video_type_registrar.register(WordPressTVVideoType)
 
 UPDATE_VERSION_ACTION = 'update_subtitles'
 DELETE_LANGUAGE_ACTION = 'delete_subtitles'

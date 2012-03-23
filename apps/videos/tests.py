@@ -1443,11 +1443,11 @@ class VimeoVideoTypeTest(TestCase):
         self.assertEqual(vu.videoid, '22070806')
         self.assertTrue(self.vt.video_url(vu))
 
-from videos.types.wordpresstv import WordpresstvVideoType
-class WordpresstvVideoTypeTest(TestCase):
+from videos.types.wordpresstv import WordPressTVVideoType
+class WordPressTVVideoTypeTest(TestCase):
 
     def setUp(self):
-        self.vt = WordpresstvVideoType
+        self.vt = WordPressTVVideoType
         self.vp_id = 'GO62Ajkq' # The VideoPress ID for the vid below
         self.url = 'http://wordpress.tv/2012/02/14/japh-thomson-code-quality-standards-and-best-practices/'
 
@@ -1471,11 +1471,6 @@ class WordpresstvVideoTypeTest(TestCase):
 
         self.assertEqual(vu.videoid, self.vp_id)
         self.assertTrue(self.vt.video_url(vu))
-
-    def just_a_test(self):
-        pass
-        # nWoZmCPz
-        #self.assertFalse(True)
 
 from videos.types.base import VideoType, VideoTypeRegistrar
 from videos.types import video_type_registrar, VideoTypeError

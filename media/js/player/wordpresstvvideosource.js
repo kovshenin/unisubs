@@ -16,7 +16,7 @@
 // along with this program.  If not, see 
 // http://www.gnu.org/licenses/agpl-3.0.html.
 
-goog.provide('unisubs.player.WordpresstvVideoSource');
+goog.provide('unisubs.player.WordPressTVVideoSource');
 
 /**
  * @constructor
@@ -25,40 +25,38 @@ goog.provide('unisubs.player.WordpresstvVideoSource');
  * @param {string} videoURL URL of Vimeo page
  * @param {Object.<string, *>=} opt_videoConfig Params to use for moogaloop player.
  */
-unisubs.player.WordpresstvVideoSource = function(videoID, videoURL, opt_videoConfig) {
-    this.videoID_ = videoID;
+unisubs.player.WordPressTVVideoSource = function(videoURL, opt_videoConfig) {
+	alert(videoURL);
     this.videoURL_ = videoURL;
     this.uuid_ = unisubs.randomString();
     this.videoConfig_ = opt_videoConfig;
 };
 
-unisubs.player.WordpresstvVideoSource.prototype.createPlayer = function() {
+unisubs.player.WordPressTVVideoSource.prototype.createPlayer = function() {
     return this.createPlayer_(false);
 };
 
-unisubs.player.WordpresstvVideoSource.prototype.createControlledPlayer = function() {
+unisubs.player.WordPressTVVideoSource.prototype.createControlledPlayer = function() {
     return new unisubs.player.ControlledVideoPlayer(this.createPlayer_(true));
 };
 
-unisubs.player.WordpresstvVideoSource.prototype.createPlayer_ = function(forDialog) {
-    return new unisubs.player.WordpresstvVideoPlayer(
-        new unisubs.player.WordpresstvVideoSource(
-            this.videoID_, this.videoURL_, this.videoConfig_),
-        forDialog);
+unisubs.player.WordPressTVVideoSource.prototype.createPlayer_ = function(forDialog) {
+    return new unisubs.player.WordPressTVVideoPlayer(
+        new unisubs.player.WordPressTVVideoSource(this.videoURL_, this.videoConfig_),forDialog);
 };
 
-unisubs.player.WordpresstvVideoSource.prototype.getVideoId = function() {
+unisubs.player.WordPressTVVideoSource.prototype.getVideoId = function() {
     return this.videoID_;
 };
 
-unisubs.player.WordpresstvVideoSource.prototype.getUUID = function() {
+unisubs.player.WordPressTVVideoSource.prototype.getUUID = function() {
     return this.uuid_;
 };
 
-unisubs.player.WordpresstvVideoSource.prototype.getVideoConfig = function() {
+unisubs.player.WordPressTVVideoSource.prototype.getVideoConfig = function() {
     return this.videoConfig_;
 };
 
-unisubs.player.WordpresstvVideoSource.prototype.getVideoURL = function() {
+unisubs.player.WordPressTVVideoSource.prototype.getVideoURL = function() {
     return this.videoURL_;
 };
