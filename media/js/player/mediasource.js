@@ -159,9 +159,9 @@ unisubs.player.MediaSource.videoSourceForURL = function(videoURL, opt_videoConfi
     else if (unisubs.player.MP3Source.isMP3URL(videoURL)) {
         return unisubs.player.MP3Source.forURL(videoURL, opt_videoConfig);
     }
-	else if (/^\s*https?:\/\/(www\.)?wordpress\.tv/.test(videoURL)) {
-		return new unisubs.player.WordPressTVVideoSource(videoURL, opt_videoConfig);
-	}
+    else if (/^\s*https?:\/\/(www\.)?wordpress\.tv/.test(videoURL)) {
+        return new unisubs.player.WordPressTVVideoSource(videoURL, opt_videoConfig);
+    }
     else {
         var videoSource = 
             unisubs.player.Html5VideoSource.forURL(videoURL, opt_videoConfig);
