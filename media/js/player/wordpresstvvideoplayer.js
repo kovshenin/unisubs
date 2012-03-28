@@ -37,19 +37,22 @@ unisubs.player.WordPressTVVideoPlayer = function(videoSource, opt_forDialog) {
     this.loadedFraction_ = 0;
 
     var readyFunc = goog.bind(this.onWordPressTVPlayerReady_, this);
-    var vpReady = "wordpresstv_player_loaded";
-    if (window[vpReady]) {
+    var wpReady = "wordpresstv_player_loaded";
+
+    if (window[wpReady]) {
         var oldReady = window[vpReady];
-        window[vpReady] = function(playerAPIID) {
+        window[wpReady] = function(playerAPIID) {
             oldReady(playerAPIID);
             readyFunc(playerAPIID);
         };
     }
-    else
-        window[vpReady] = readyFunc;
+    else {
+		window[wpReady] = readyFunc;
+	}
 
     this.playerSize_ = null;
     this.player_ = null;
+
     /**
      * Array of functions to execute once player is ready.
      */
@@ -72,6 +75,7 @@ unisubs.player.WordPressTVVideoPlayer.prototype.createDom = function() {
         unisubs.player.AbstractVideoPlayer.DEFAULT_SIZE;
 };
 
+var wptv_player_object = null;
 unisubs.player.WordPressTVVideoPlayer.prototype.enterDocument = function() {
     unisubs.player.WordPressTVVideoPlayer.superClass_.enterDocument.call(this);
     if (!this.swfEmbedded_) {
@@ -79,9 +83,11 @@ unisubs.player.WordPressTVVideoPlayer.prototype.enterDocument = function() {
         var videoSpan = this.getDomHelper().createDom('span');
         videoSpan.id = unisubs.randomString();
         this.getElement().appendChild(videoSpan);
+		wptv_player_object = this;
         var params = { 'allowScriptAccess': 'always', 
                        'wmode' : 'opaque',
                        'allowfullscreen': 'true'};
+			
         var atts = { 'id': this.playerElemID_,
                      'style': unisubs.style.setSizeInString(
                          '', this.playerSize_) };
@@ -96,6 +102,8 @@ unisubs.player.WordPressTVVideoPlayer.prototype.enterDocument = function() {
     this.getHandler().
         listen(this.timeUpdateTimer_, goog.Timer.TICK, this.timeUpdateTick_);
 };
+
+window['wptv_LoadedEvent'] = function() { wptv_player_object.onWordPressTVPlayerReady_( wptv_player_object.playerAPIID_ ); }
 
 unisubs.player.WordPressTVVideoPlayer.prototype.createSWFURL_ = function() {
     var baseQuery = {};
@@ -131,7 +139,8 @@ unisubs.player.WordPressTVVideoPlayer.prototype.sizeFromConfig_ = function() {
 };
 
 unisubs.player.WordPressTVVideoPlayer.prototype.getPlayheadTimeInternal = function() {
-    return this.swfLoaded_ ? this.player_['api_getCurrentTime']() : 0;
+	try { return document.getElementById(this.playerElemID_)['wptv_getCurrentTime'](); } catch(e) {}
+    return 0; // this.swfLoaded_ ? this.player_['api_getCurrentTime']() : 0;
 };
 
 unisubs.player.WordPressTVVideoPlayer.prototype.timeUpdateTick_ = function(e) {
@@ -140,7 +149,8 @@ unisubs.player.WordPressTVVideoPlayer.prototype.timeUpdateTick_ = function(e) {
 };
 
 unisubs.player.WordPressTVVideoPlayer.prototype.getDuration = function() {
-    return this.player_['api_getDuration']();
+	try { return document.getElementById(this.playerElemID_)['wptv_getDuration'](); } catch(e) {}
+    return 0; // this.player_['api_getDuration']();
 };
 
 unisubs.player.WordPressTVVideoPlayer.prototype.getBufferedLength = function() {
@@ -154,10 +164,12 @@ unisubs.player.WordPressTVVideoPlayer.prototype.getBufferedEnd = function(index)
     return this.loadedFraction_ * this.getDuration();
 };
 unisubs.player.WordPressTVVideoPlayer.prototype.getVolume = function() {
+	try { return document.getElementById(this.playerElemID_)['wptv_getVolume'](); } catch(e) {}
     return this.player_ ? this.player_['api_getVolume']() : 0.5;
 };
 unisubs.player.WordPressTVVideoPlayer.prototype.setVolume = function(volume) {
     if (this.player_) {
+		try { return document.getElementById(this.playerElemID_)['wptv_setVolume'](volume); } catch(e) {}
         this.player_['api_setVolume'](volume * 100);
     }
     else
@@ -166,7 +178,8 @@ unisubs.player.WordPressTVVideoPlayer.prototype.setVolume = function(volume) {
 
 unisubs.player.WordPressTVVideoPlayer.prototype.setPlayheadTime = function(playheadTime) {
     if (this.player_) {
-        this.player_['api_seekTo'](playheadTime);
+		try { return document.getElementById(this.playerElemID_)['wptv_setCurrentTime'](playheadTime); } catch(e) {}
+        // this.player_['api_seekTo'](playheadTime);
         this.sendTimeUpdateInternal();
     }
     else
@@ -179,23 +192,25 @@ unisubs.player.WordPressTVVideoPlayer.prototype.getVideoSize = function() {
 };
 
 unisubs.player.WordPressTVVideoPlayer.prototype.isPausedInternal = function() {
-    return !this.isPlaying_;
+	try { return (document.getElementById(this.playerElemID_)['wptv_getState']() == 'paused'); } catch(e) {}
+	return true; // return !this.isPlaying_;
 };
 unisubs.player.WordPressTVVideoPlayer.prototype.isPlayingInternal = function() {
-    return this.isPlaying_;
+	try { return (document.getElementById(this.playerElemID_)['wptv_getState']() == 'playing') } catch(e) {};
+    return false; // return this.isPlaying_;
 };
 unisubs.player.WordPressTVVideoPlayer.prototype.videoEndedInternal = function() {
     return this.getPlayheadTime() == this.getDuration();
 };
 unisubs.player.WordPressTVVideoPlayer.prototype.playInternal = function() {
     if (this.swfLoaded_)
-        this.player_['api_play']();
+        try { document.getElementById(this.playerElemID_)['wptv_playVideo'](); } catch(e) {} // this.player_['api_play']();
     else
         this.commands_.push(goog.bind(this.playInternal, this));
 };
 unisubs.player.WordPressTVVideoPlayer.prototype.pauseInternal = function() {
     if (this.swfLoaded_)
-        this.player_['api_pause']();
+        try { document.getElementById(this.playerElemID_)['wptv_pauseVideo'](); } catch(e) {} // this.player_['api_pause']();
     else
         this.commands_.push(goog.bind(this.pauseInternal, this));
 };
@@ -207,11 +222,10 @@ unisubs.player.WordPressTVVideoPlayer.prototype.resumeLoadingInternal = function
     this.play();
 };
 
-
-
 unisubs.player.WordPressTVVideoPlayer.prototype.onWordPressTVPlayerReady_ = function(swf_id) {
-    if (swf_id != this.playerAPIID_)
-        return;
+
+	if (swf_id != this.playerAPIID_)
+    	return;
 
     this.player_ = goog.dom.$(this.playerElemID_);
     this.swfLoaded_ = true;
@@ -235,7 +249,7 @@ unisubs.player.WordPressTVVideoPlayer.prototype.onWordPressTVPlayerReady_ = func
     };
     this.player_['api_addEventListener']('onFinish', onFinishFn);
 
-    var onPlayFn = "onWordPressTVPla" + randomString;
+    /*var onPlayFn = "onWordPressTVPla" + randomString;
     window[onPlayFn] = function(swfID) {
         that.isPlaying_ = true;
         that.timeUpdateTimer_.start();
@@ -245,10 +259,23 @@ unisubs.player.WordPressTVVideoPlayer.prototype.onWordPressTVPlayerReady_ = func
     var onPauseFn = "onWordPressTVPau" + randomString;
     window[onPauseFn] = function(swfID) {
         that.isPlaying_ = false;
-        that.timeUpdatetimer_.stop();
+        that.timeUpdateTimer_.stop();
     };
-    this.player_['api_addEventListener']('onPause', onPauseFn);
+    this.player_['api_addEventListener']('onPause', onPauseFn);*/
 };
+
+
+// Fired when VideoPress is playing
+window['wptv_PlayingEvent'] = function() {
+	wptv_player_object.isPlaying_ = true;
+	wptv_player_object.timeUpdateTimer_.start();
+}
+
+// Fired when VideoPress is paused
+window['wptv_PausedEvent'] = function() {
+	wptv_player_object.isPlaying_ = false;
+	wptv_player_object.timeUpdateTimer_.stop();
+}
 
 unisubs.player.WordPressTVVideoPlayer.prototype.getVideoSize = function() {
     return this.playerSize_;

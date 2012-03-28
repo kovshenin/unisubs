@@ -26,7 +26,6 @@ goog.provide('unisubs.player.WordPressTVVideoSource');
  * @param {Object.<string, *>=} opt_videoConfig Params to use for moogaloop player.
  */
 unisubs.player.WordPressTVVideoSource = function(videoURL, opt_videoConfig) {
-	alert(videoURL);
     this.videoURL_ = videoURL;
     this.uuid_ = unisubs.randomString();
     this.videoConfig_ = opt_videoConfig;
