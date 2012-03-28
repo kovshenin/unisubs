@@ -21,9 +21,8 @@ goog.provide('unisubs.player.WordPressTVVideoSource');
 /**
  * @constructor
  * @implements {unisubs.player.MediaSource}
- * @param {string} videoID Vimeo video id (unrelated to unisubs.player id)
- * @param {string} videoURL URL of Vimeo page
- * @param {Object.<string, *>=} opt_videoConfig Params to use for moogaloop player.
+ * @param {string} videoURL URL of WordPress.tv page
+ * @param {Object.<string, *>=} opt_videoConfig Params to use for VP player.
  */
 unisubs.player.WordPressTVVideoSource = function(videoURL, opt_videoConfig) {
     this.videoURL_ = videoURL;

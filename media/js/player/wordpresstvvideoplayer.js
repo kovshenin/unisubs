@@ -20,7 +20,7 @@ goog.provide('unisubs.player.WordPressTVVideoPlayer');
 
 /**
  * @constructor
- * @param {unisubs.player.VimeoVideoSource} videoSource
+ * @param {unisubs.player.WordPressTVVideoSource} videoSource
  * @param {boolean=} opt_forDialog
  */
 unisubs.player.WordPressTVVideoPlayer = function(videoSource, opt_forDialog) {
@@ -40,15 +40,15 @@ unisubs.player.WordPressTVVideoPlayer = function(videoSource, opt_forDialog) {
     var wpReady = "wordpresstv_player_loaded";
 
     if (window[wpReady]) {
-        var oldReady = window[vpReady];
+        var oldReady = window[wpReady];
         window[wpReady] = function(playerAPIID) {
             oldReady(playerAPIID);
             readyFunc(playerAPIID);
         };
     }
     else {
-		window[wpReady] = readyFunc;
-	}
+        window[wpReady] = readyFunc;
+    }
 
     this.playerSize_ = null;
     this.player_ = null;
@@ -83,11 +83,11 @@ unisubs.player.WordPressTVVideoPlayer.prototype.enterDocument = function() {
         var videoSpan = this.getDomHelper().createDom('span');
         videoSpan.id = unisubs.randomString();
         this.getElement().appendChild(videoSpan);
-		wptv_player_object = this;
+        wptv_player_object = this;
         var params = { 'allowScriptAccess': 'always', 
                        'wmode' : 'opaque',
                        'allowfullscreen': 'true'};
-			
+
         var atts = { 'id': this.playerElemID_,
                      'style': unisubs.style.setSizeInString(
                          '', this.playerSize_) };
@@ -139,7 +139,7 @@ unisubs.player.WordPressTVVideoPlayer.prototype.sizeFromConfig_ = function() {
 };
 
 unisubs.player.WordPressTVVideoPlayer.prototype.getPlayheadTimeInternal = function() {
-	try { return document.getElementById(this.playerElemID_)['wptv_getCurrentTime'](); } catch(e) {}
+    try { return document.getElementById(this.playerElemID_)['wptv_getCurrentTime'](); } catch(e) {}
     return 0; // this.swfLoaded_ ? this.player_['api_getCurrentTime']() : 0;
 };
 
@@ -149,7 +149,7 @@ unisubs.player.WordPressTVVideoPlayer.prototype.timeUpdateTick_ = function(e) {
 };
 
 unisubs.player.WordPressTVVideoPlayer.prototype.getDuration = function() {
-	try { return document.getElementById(this.playerElemID_)['wptv_getDuration'](); } catch(e) {}
+    try { return document.getElementById(this.playerElemID_)['wptv_getDuration'](); } catch(e) {}
     return 0; // this.player_['api_getDuration']();
 };
 
@@ -157,19 +157,18 @@ unisubs.player.WordPressTVVideoPlayer.prototype.getBufferedLength = function() {
     return this.player_ ? 1 : 0;
 };
 unisubs.player.WordPressTVVideoPlayer.prototype.getBufferedStart = function(index) {
-    // vimeo seems to only buffer from the start
     return 0;
 };
 unisubs.player.WordPressTVVideoPlayer.prototype.getBufferedEnd = function(index) {
     return this.loadedFraction_ * this.getDuration();
 };
 unisubs.player.WordPressTVVideoPlayer.prototype.getVolume = function() {
-	try { return document.getElementById(this.playerElemID_)['wptv_getVolume'](); } catch(e) {}
+    try { return document.getElementById(this.playerElemID_)['wptv_getVolume'](); } catch(e) {}
     return this.player_ ? this.player_['api_getVolume']() : 0.5;
 };
 unisubs.player.WordPressTVVideoPlayer.prototype.setVolume = function(volume) {
     if (this.player_) {
-		try { return document.getElementById(this.playerElemID_)['wptv_setVolume'](volume); } catch(e) {}
+        try { return document.getElementById(this.playerElemID_)['wptv_setVolume'](volume); } catch(e) {}
         this.player_['api_setVolume'](volume * 100);
     }
     else
@@ -178,7 +177,7 @@ unisubs.player.WordPressTVVideoPlayer.prototype.setVolume = function(volume) {
 
 unisubs.player.WordPressTVVideoPlayer.prototype.setPlayheadTime = function(playheadTime) {
     if (this.player_) {
-		try { return document.getElementById(this.playerElemID_)['wptv_setCurrentTime'](playheadTime); } catch(e) {}
+        try { return document.getElementById(this.playerElemID_)['wptv_setCurrentTime'](playheadTime); } catch(e) {}
         // this.player_['api_seekTo'](playheadTime);
         this.sendTimeUpdateInternal();
     }
@@ -192,11 +191,11 @@ unisubs.player.WordPressTVVideoPlayer.prototype.getVideoSize = function() {
 };
 
 unisubs.player.WordPressTVVideoPlayer.prototype.isPausedInternal = function() {
-	try { return (document.getElementById(this.playerElemID_)['wptv_getState']() == 'paused'); } catch(e) {}
-	return true; // return !this.isPlaying_;
+    try { return (document.getElementById(this.playerElemID_)['wptv_getState']() == 'paused'); } catch(e) {}
+    return true; // return !this.isPlaying_;
 };
 unisubs.player.WordPressTVVideoPlayer.prototype.isPlayingInternal = function() {
-	try { return (document.getElementById(this.playerElemID_)['wptv_getState']() == 'playing') } catch(e) {};
+    try { return (document.getElementById(this.playerElemID_)['wptv_getState']() == 'playing') } catch(e) {};
     return false; // return this.isPlaying_;
 };
 unisubs.player.WordPressTVVideoPlayer.prototype.videoEndedInternal = function() {
@@ -224,8 +223,8 @@ unisubs.player.WordPressTVVideoPlayer.prototype.resumeLoadingInternal = function
 
 unisubs.player.WordPressTVVideoPlayer.prototype.onWordPressTVPlayerReady_ = function(swf_id) {
 
-	if (swf_id != this.playerAPIID_)
-    	return;
+    if (swf_id != this.playerAPIID_)
+        return;
 
     this.player_ = goog.dom.$(this.playerElemID_);
     this.swfLoaded_ = true;
@@ -267,14 +266,14 @@ unisubs.player.WordPressTVVideoPlayer.prototype.onWordPressTVPlayerReady_ = func
 
 // Fired when VideoPress is playing
 window['wptv_PlayingEvent'] = function() {
-	wptv_player_object.isPlaying_ = true;
-	wptv_player_object.timeUpdateTimer_.start();
+    wptv_player_object.isPlaying_ = true;
+    wptv_player_object.timeUpdateTimer_.start();
 }
 
 // Fired when VideoPress is paused
 window['wptv_PausedEvent'] = function() {
-	wptv_player_object.isPlaying_ = false;
-	wptv_player_object.timeUpdateTimer_.stop();
+    wptv_player_object.isPlaying_ = false;
+    wptv_player_object.timeUpdateTimer_.stop();
 }
 
 unisubs.player.WordPressTVVideoPlayer.prototype.getVideoSize = function() {
